@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+from grid_logic import DEFAULT_GRID, validate_grid, validate_pose, cells, cell_xy, cycle_frames
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / 'data' / 'index.html'
@@ -27,6 +28,77 @@ try:
             POSITIONS[name] = pos
 except (OSError, ValueError, TypeError):
     pass
+
+GRID_FILE = ROOT / 'simulator' / 'grid_calibration.json'
+GRID = dict(DEFAULT_GRID)
+CALIBRATED = {}
+try:
+    saved = json.loads(GRID_FILE.read_text(encoding='utf-8'))
+    GRID = validate_grid(saved['grid'])
+    CALIBRATED = {k:validate_pose(v,GRID) for k,v in saved.get('cells',{}).items() if k in cells(GRID)}
+except (ValueError,KeyError,OSError,TypeError):
+    pass
+GRID_CYCLE = None
+
+def grid_store():
+    temp=GRID_FILE.with_suffix('.tmp')
+    temp.write_text(json.dumps({'grid':GRID,'cells':CALIBRATED},ensure_ascii=False,indent=2),encoding='utf-8')
+    temp.replace(GRID_FILE)
+
+def grid_snapshot():
+    return {'grid':GRID,'cells':CALIBRATED,'logical_cells':{name:cell_xy(GRID,name) for name in cells(GRID)},
+            'cycle':GRID_CYCLE,'axes':state['axes'],'locked':state['locked'],'simulation_only':True}
+
+def grid_act(method,path,data):
+    global GRID,GRID_CYCLE,CALIBRATED
+    with lock:
+        if method == 'GET' and path == '/api/grid':return grid_snapshot()
+        if method != 'POST':raise LookupError('Unknown grid endpoint')
+        if path == '/api/grid/stop':
+            state['locked']=True;GRID_CYCLE=None;state['cycle']=None;state['commands']+=1;return grid_snapshot()
+        if path == '/api/grid/unlock':
+            state['locked']=False;state['commands']+=1;return grid_snapshot()
+        if state['locked']:raise PermissionError('Locked: use unlock')
+        if path == '/api/grid/config':
+            if GRID_CYCLE is not None:raise PermissionError('Cycle active')
+            GRID=validate_grid(data.get('grid'))
+            CALIBRATED={k:v for k,v in CALIBRATED.items() if k in cells(GRID)}
+            grid_store()
+        elif path == '/api/grid/teach':
+            if GRID_CYCLE is not None:raise PermissionError('Cycle active')
+            name=data.get('cell')
+            if name not in cells(GRID):raise ValueError('Unknown cell')
+            # Teaching saves the presently selected VIRTUAL angles, NOT measured robot pose.
+            p=validate_pose(data.get('pose'),GRID)
+            if p['grip_closed']:raise ValueError('Teach target with gripper open')
+            CALIBRATED[name]=p;grid_store()
+        elif path == '/api/grid/goto':
+            if GRID_CYCLE is not None:raise PermissionError('Cycle active')
+            name=data.get('cell')
+            if name not in CALIBRATED:raise ValueError('Cell has not been taught')
+            p=CALIBRATED[name]
+            state['axes']={a:p[a] for a in ('base','shoulder','elbow','gripper','rail')}
+        elif path == '/api/grid/cycle/start':
+            if GRID_CYCLE is not None:raise PermissionError('Cycle already active')
+            if state['cycle'] is not None:raise PermissionError('Legacy cycle active')
+            src,dst=data.get('from'),data.get('to')
+            if src==dst or src not in CALIBRATED or dst not in CALIBRATED:raise ValueError('Teach two different cells before cycling')
+            safe={**POSITIONS['SAFE'], 'grip_closed':False}
+            home={**POSITIONS['HOME'], 'grip_closed':False}
+            frames=cycle_frames(CALIBRATED[src],CALIBRATED[dst],safe,home,GRID)
+            GRID_CYCLE={'from':src,'to':dst,'step':0,'last_step':None,'total':len(frames)}
+        elif path == '/api/grid/cycle/next':
+            if GRID_CYCLE is None:raise ValueError('No active cycle')
+            src,dst=GRID_CYCLE['from'],GRID_CYCLE['to']
+            frames=cycle_frames(CALIBRATED[src],CALIBRATED[dst],{**POSITIONS['SAFE'],'grip_closed':False},{**POSITIONS['HOME'],'grip_closed':False},GRID)
+            name,p=frames[GRID_CYCLE['step']]
+            state['axes']={a:p[a] for a in ('base','shoulder','elbow','gripper','rail')}
+            GRID_CYCLE['last_step']=name;GRID_CYCLE['step']+=1
+            if GRID_CYCLE['step']==len(frames):GRID_CYCLE=None
+        elif path == '/api/grid/cycle/reset':GRID_CYCLE=None
+        else:raise LookupError('Unknown grid endpoint')
+        state['commands']+=1
+        return grid_snapshot()
 
 lock = threading.RLock()
 state = {'axes': DEFAULTS['HOME'].copy(), 'locked': False, 'cycle': None, 'commands': 0, 'mode': 'MOCK', 'hardware': False}
@@ -50,11 +122,13 @@ def position(value):
 
 
 def act(method,path,data):
+    global GRID_CYCLE
     with lock:
         if method == 'GET' and path == '/api/state': return snapshot()
         if method == 'GET' and path == '/api/positions': return {'positions': POSITIONS}
         if method != 'POST': raise LookupError('Unknown endpoint')
         if path == '/api/stop':
+            GRID_CYCLE = None
             state['locked'] = True
             state['cycle'] = None
             state['commands'] += 1
@@ -64,6 +138,8 @@ def act(method,path,data):
             state['commands'] += 1
             return snapshot()
         if state['locked']: raise PermissionError('Mock control locked; unlock first')
+        if GRID_CYCLE is not None and path not in ('/api/stop', '/api/unlock'):
+            raise PermissionError('Grid cycle active: complete or reset it first')
         if state['cycle'] is not None and path not in ('/api/cycle/reset','/api/cycle/next'):
             raise PermissionError('Cycle active: finish or reset before manual commands')
         if path == '/api/axes':
@@ -118,9 +194,23 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
         if path in ('/', '/index.html'):
-            self.send(200, INDEX.read_bytes(), 'text/html; charset=utf-8'); return
+            if not INDEX.is_file():
+                self.send(404, {'error': 'data/index.html not found'})
+                return
+            self.send(200, INDEX.read_bytes(), 'text/html; charset=utf-8')
+            return
+        if path in ('/grid', '/grid/'):
+            grid_html = ROOT / 'data' / 'grid.html'
+            if not grid_html.is_file():
+                self.send(404, {'error': 'data/grid.html not found'})
+                return
+            self.send(200, grid_html.read_bytes(), 'text/html; charset=utf-8')
+            return
+        if path == '/api/health':
+            self.send(200, {'app': 'ARC26 Mock ESP32', 'version': '0.5', 'grid_enabled': True, 'simulation_only': True})
+            return
         if path == '/favicon.ico': self.send(204,b''); return
-        try: self.send(200, act('GET',path,{}))
+        try: self.send(200, grid_act('GET',path,{}) if path.startswith('/api/grid') else act('GET',path,{}))
         except LookupError as ex: self.send(404,{'error':str(ex)})
 
     def do_POST(self):
@@ -130,7 +220,7 @@ class Handler(BaseHTTPRequestHandler):
             if length > 16384: raise ValueError('Payload too large')
             data = json.loads(self.rfile.read(length)) if length else {}
             if not isinstance(data,dict): raise ValueError('JSON object required')
-            self.send(200, act('POST',path,data))
+            self.send(200, grid_act('POST',path,data) if path.startswith('/api/grid') else act('POST',path,data))
         except PermissionError as ex: self.send(409,{'error':str(ex)})
         except (ValueError,TypeError,KeyError,json.JSONDecodeError) as ex: self.send(400,{'error':str(ex)})
         except LookupError as ex: self.send(404,{'error':str(ex)})
@@ -139,11 +229,18 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='127.0.0.1', help='127.0.0.1 (local only) or 0.0.0.0 (LAN)')
-    parser.add_argument('--port', type=int, default=8000)
+    parser.add_argument('--port', type=int, default=8001)
     args = parser.parse_args()
-    server = ThreadingHTTPServer((args.host,args.port), Handler)
+    try:
+        server = ThreadingHTTPServer((args.host,args.port), Handler)
+    except OSError as exc:
+        print(f'ERROR: Cannot bind to {args.host}:{args.port}: {exc}', flush=True)
+        print('Try: python simulator/mock_server.py --port 8002', flush=True)
+        raise SystemExit(1)
     print(f"ARC'26 Mock ESP32 running at http://{args.host}:{args.port}", flush=True)
     print('SIMULATION ONLY. No motors are connected.', flush=True)
+    print(f'GRID UI: http://{args.host}:{args.port}/grid', flush=True)
+    print(f'GRID API: http://{args.host}:{args.port}/api/grid', flush=True)
     try: server.serve_forever()
     except KeyboardInterrupt: pass
     finally: server.server_close()
