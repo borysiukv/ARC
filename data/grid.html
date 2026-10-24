@@ -1,68 +1,9 @@
 <!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ARC / 26 — GRID CONTROL</title><style>
 :root{--paper:#f3efe5;--ink:#17211f;--blue:#2645eb;--orange:#f45a38;--yellow:#f8dc59;--mint:#a3d9c2}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 'Segoe UI',Arial,sans-serif}main{max-width:1350px;margin:auto;padding:24px}h1,h2,h3{font-family:Impact,'Arial Narrow',sans-serif;line-height:1;letter-spacing:-.025em}h1{font-size:clamp(55px,10vw,120px);margin:15px 0}h2{font-size:31px;margin:0}.top,.kicker,.mono,button,label,small{font-family:Consolas,monospace}header{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:3px solid var(--ink);padding-bottom:13px}.logo{font:bold 24px Impact}.logo b{color:var(--blue)}a{color:var(--blue)}.kicker{font-size:12px;color:var(--blue);font-weight:bold;margin-top:20px}.intro{border-left:5px solid var(--orange);padding-left:15px;max-width:700px;margin-bottom:25px}.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:17px}.panel{border:2px solid var(--ink);padding:19px;min-width:0;background:#f8f5ed}.panelhead{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--ink);padding-bottom:13px;margin-bottom:16px}.tag{font:700 10px Consolas;color:var(--blue)}.grid{display:grid;gap:7px}.cell{border:2px solid var(--ink);background:var(--yellow);min-height:76px;font:bold 22px Impact;position:relative}.cell small{display:block;font:10px Consolas}.cell.on{background:var(--blue);color:white}.cell.saved{box-shadow:inset 0 -8px var(--mint)}.gridbox{overflow-x:auto}.field{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.field label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:bold}.field input,.field select{width:100%;padding:10px;background:white;border:1.5px solid var(--ink);font:16px Consolas}button{border:2px solid var(--ink);background:var(--yellow);padding:12px;font-weight:bold;cursor:pointer}button:hover{filter:brightness(.95)}button.primary{background:var(--blue);color:white}button.orange{background:var(--orange)}button.dark{background:var(--ink);color:white}button:disabled{opacity:.4;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions>*{flex:1}.output{padding:14px;background:var(--ink);color:white;font:12px/1.6 Consolas;white-space:pre-wrap;min-height:90px;overflow-wrap:anywhere}.pose{background:var(--mint);padding:12px}.note{border-left:5px solid var(--orange);background:#f7dbcd;padding:12px;margin-top:15px;font-size:13px}.sliderrow{display:grid;grid-template-columns:105px 1fr 58px;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #ccc}.sliderrow input{width:100%;accent-color:var(--blue)}.status{font:700 11px Consolas;background:var(--yellow);padding:9px}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}.steps div{padding:8px;font:10px Consolas;border:1px solid #999}.steps .active{background:var(--blue);color:white}.footer{border-top:2px solid var(--ink);padding-top:12px;margin-top:25px;font:12px Consolas}.safe{color:#c12710;font-weight:bold} @media(max-width:800px){.layout{grid-template-columns:1fr}main{padding:14px}.field{grid-template-columns:1fr 1fr}.cell{min-height:64px}}@media(max-width:450px){.field{grid-template-columns:1fr}.cell{min-height:57px;font-size:16px}.cell small{font-size:8px}.sliderrow{grid-template-columns:76px 1fr 44px}}
-
-/* 05 / STEP CONTROL — scoped editorial cards */
-.step-section{margin-top:22px;border:2px solid var(--ink);background:#f8f5ed;padding:20px;min-width:0}
-.step-section .panelhead{margin-bottom:18px}
-.step-layout{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px}
-.step-card{background:#f3efe5;border:2px solid var(--ink);padding:16px;min-width:0;display:flex;flex-direction:column;gap:14px}
-.step-card:nth-child(2){background:#e5e9fa}.step-card:nth-child(3){background:#f4e5d7}
-.step-overline{font:700 11px Consolas,monospace;color:var(--blue);letter-spacing:.02em}
-.step-card h3{font-size:clamp(22px,2.7vw,30px);margin:0;letter-spacing:0;overflow-wrap:anywhere}
-.step-big{font:700 clamp(32px,4vw,48px) Impact,'Arial Narrow',sans-serif;line-height:1;color:var(--ink)}
-.step-sub{font:12px/1.5 Consolas,monospace;color:#4d5854}
-.step-controls{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
-.step-controls button{flex:1;min-width:0;min-height:44px;font:700 12px Consolas,monospace;padding:9px 11px;white-space:nowrap}
-.step-controls button:focus-visible,.step-section input:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
-.step-card input[type=range]{width:100%;margin:3px 0 9px;accent-color:var(--blue)}
-.rail-map{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
-.rail-node{height:40px;border:1.5px solid var(--ink);display:grid;place-items:center;font:700 12px Consolas,monospace;background:white}
-.rail-node.on{background:var(--blue);color:white}
-.step-state{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;background:var(--ink);color:white;flex-wrap:wrap}
-.step-state strong{font:700 14px Consolas,monospace;color:var(--yellow)}
-.step-state span{font:12px Consolas,monospace}
-.step-pill{display:inline-block;padding:7px 10px;border:1.5px solid var(--ink);background:var(--mint);font:700 12px Consolas,monospace;align-self:flex-start}
-.step-note{font-size:12px;border-left:4px solid var(--orange);padding-left:10px;margin:0;line-height:1.5}
-.step-buttons{margin-top:auto}
-@media(max-width:980px){.step-layout{grid-template-columns:1fr 1fr}.step-card:last-child{grid-column:1/-1}}
-@media(max-width:630px){.step-section{padding:12px}.step-layout{grid-template-columns:1fr}.step-card:last-child{grid-column:auto}.step-card{padding:14px}.step-card h3{font-size:26px}.step-controls button{white-space:normal}.step-state{align-items:flex-start;flex-direction:column}}
 </style></head><body><main><header><div class="logo">ARC <b>//</b> 26</div><a href="/">← MANUAL CONTROL</a><span class="status" id="status">CONNECTING</span></header><div class="kicker">AUTOMATION FIELD NOTE / 002 · CALIBRATION-FIRST</div><h1>СІТКА.<br><span style="color:var(--blue)">РУХ. ТОЧНІСТЬ.</span></h1><p class="intro">Сітка в мм + збережені реальні позиції кожної комірки. <strong>Це симулятор.</strong> Нуль рейки, безпечні кути й фізичні координати треба калібрувати на роботі.</p>
 <div class="layout"><section class="panel"><div class="panelhead"><h2>01 / СІТКА СТОЛУ</h2><span class="tag">X × Y / MM</span></div><div class="gridbox"><div id="grid" class="grid"></div></div><p id="selected" class="pose" style="font-family:Consolas">Обери комірку</p><div class="field" id="gridfields"><label>Колонки<input type="number" data-key="columns" min="1" max="8" step="1"></label><label>Ряди<input type="number" data-key="rows" min="1" max="8" step="1"></label><label>Крок X (мм)<input type="number" data-key="pitch_x_mm" min="1" step="1"></label><label>Крок Y (мм)<input type="number" data-key="pitch_y_mm" min="1" step="1"></label><label>Початок X (мм)<input type="number" data-key="origin_x_mm" step="1"></label><label>Початок Y (мм)<input type="number" data-key="origin_y_mm" step="1"></label><label>Хід рейки (мм)<input type="number" data-key="rail_travel_mm" min="1" step="1"></label><label>Крок повороту (°)<input type="number" data-key="rotation_step_deg" min="1" max="90"></label><label>Нуль основи (°)<input type="number" data-key="base_zero_deg" min="0" max="180"></label><label>Клешня OPEN (°)<input type="number" data-key="grip_open_deg" min="0" max="180"></label><label>Клешня CLOSED (°)<input type="number" data-key="grip_closed_deg" min="0" max="180"></label></div><div class="actions"><button id="savegrid">SAVE GRID CONFIG</button></div><div class="note">Формули координат описують центри комірок, але НЕ обчислюють кути суглобів. Кожну досяжну комірку потрібно навчити.</div></section>
 <section class="panel"><div class="panelhead"><h2>02 / TEACH POSE</h2><span class="tag">VIRTUAL JOINTS</span></div><div id="sliders"></div><div class="field"><label>Крок повороту R (цілий індекс)<input id="rstep" type="number" step="1" value="0"></label><label>Клешня / boolean<select id="grip"><option value="false">FALSE / OPEN</option><option value="true">TRUE / CLOSED</option></select></label></div><div class="actions"><button id="applyrot">APPLY ROTATION STEP</button><button id="savepose" class="primary">TEACH SELECTED CELL</button></div><div class="actions" style="margin-top:8px"><button id="loadpose">LOAD TAUGHT CELL</button></div><div class="note">Перед TEACH вибери комірку та налаштуй повзунки. Зберігається <strong>віртуальна цільова поза</strong>, а не виміряне положення реального робота. Для Pick & Place позиція захоплення зберігається з OPEN.</div>
-<hr style="border:1px solid var(--ink);margin:20px 0"><div class="panelhead"><h2>03 / AB → CD</h2><span class="tag">SEMI-AUTO / STEP MODE</span></div><div class="field"><label>FROM<select id="from"></select></label><label>TO<select id="to"></select></label></div><div class="actions"><button class="orange" id="start">START / SIM</button><button id="next" class="primary">NEXT STEP →</button><button id="reset">RESET</button></div><div class="steps" id="steps"></div><div class="actions"><button id="stop" class="orange">LOCK / SOFTWARE STOP</button><button id="unlock" class="dark">UNLOCK</button></div><p class="note safe">STOP тут блокує mock-команди; це НЕ фізична аварійна зупинка.</p><p class="output" id="output">Очікування…</p></section></div>
-<section class="step-section" id="step-control" aria-label="Крокове керування">
- <div class="panelhead"><h2>05 / STEP CONTROL</h2><span class="tag">X / R / GRIP · MOCK</span></div>
- <div class="step-layout">
-  <div class="step-card">
-   <div class="step-overline">01 / LINEAR AXIS</div>
-   <h3>X / ПОЗИЦІЯ</h3>
-   <div class="step-big" id="x-value">X0</div>
-   <div class="rail-map" id="rail-map" aria-label="Кроки каретки"></div>
-   <div class="step-controls step-buttons"><button id="step-minus" type="button">← STEP −</button><button id="step-plus" type="button" class="primary">STEP + →</button></div>
-   <p class="step-note">X0–X5 — умовні кроки DC-моторів, а не точні міліметри.</p>
-  </div>
-  <div class="step-card">
-   <div class="step-overline">02 / BASE ROTATION</div>
-   <h3>R / ПОВОРОТ</h3>
-   <div class="step-big" id="rotation-value">90°</div>
-   <label for="rotation-step" class="step-sub">Індекс повороту: <strong id="r-index">R6</strong></label>
-   <input id="rotation-step" type="range" min="0" max="12" step="1" value="6" aria-label="Крок повороту основи">
-   <div class="step-controls"><button id="rot-minus" type="button">− 15°</button><button id="rot-plus" type="button" class="primary">+ 15°</button></div>
-   <div class="step-sub">R0 = 0° · R12 = 180° (логічно)</div>
-   <p class="step-note">Механічний діапазон перевіряйте на фізичній конструкції.</p>
-  </div>
-  <div class="step-card">
-   <div class="step-overline">03 / END EFFECTOR</div>
-   <h3>GRIP / КЛЕШНЯ</h3>
-   <div class="step-big" id="grip-value">OPEN</div>
-   <div class="step-pill" id="grip-boolean">FALSE / 0</div>
-   <div class="step-controls step-buttons"><button id="grip-open" type="button" class="primary">OPEN / 0</button><button id="grip-close" type="button">CLOSE / 1</button></div>
-   <p class="step-note">Boolean — бажана команда, не підтвердження фізичного захоплення.</p>
-  </div>
- </div>
- <div class="step-state" aria-live="polite"><strong id="step-summary">X0 · R6 · GRIP 0</strong><span id="step-status">CONNECTING TO STEP API…</span></div>
-</section>
-<div class="footer">ARC'26 / GRID CONTROL v0.5 — SIMULATION ONLY · NO MOTOR OUTPUTS</div></main>
+<hr style="border:1px solid var(--ink);margin:20px 0"><div class="panelhead"><h2>03 / AB → CD</h2><span class="tag">SEMI-AUTO / STEP MODE</span></div><div class="field"><label>FROM<select id="from"></select></label><label>TO<select id="to"></select></label></div><div class="actions"><button class="orange" id="start">START / SIM</button><button id="next" class="primary">NEXT STEP →</button><button id="reset">RESET</button></div><div class="steps" id="steps"></div><div class="actions"><button id="stop" class="orange">LOCK / SOFTWARE STOP</button><button id="unlock" class="dark">UNLOCK</button></div><p class="note safe">STOP тут блокує mock-команди; це НЕ фізична аварійна зупинка.</p><p class="output" id="output">Очікування…</p></section></div><div class="footer">ARC'26 / GRID CONTROL v0.5 — SIMULATION ONLY · NO MOTOR OUTPUTS</div></main>
 <script>
 let model=null,selected='A1',pose={base:90,shoulder:90,elbow:90,gripper:35,rail:0,grip_closed:false};const $=s=>document.querySelector(s),names=['base','shoulder','elbow','gripper','rail'];
 async function api(path,data){const r=await fetch('/api/grid'+path,{method:data===undefined?'GET':'POST',headers:{'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});const v=await r.json();if(!r.ok)throw Error(v.error||r.status);return v}
@@ -72,61 +13,4 @@ function render(){if(!model)return;$('#status').textContent=model.locked?'LOCKED
 function paintSliders(){let target=$('#sliders');for(const n of names){const row=document.createElement('div');row.className='sliderrow';const label=document.createElement('label');label.textContent=n.toUpperCase();const input=document.createElement('input');input.type='range';input.id='axis-'+n;input.min=0;input.max=n==='rail'?100:180;input.step=1;input.value=pose[n];const output=document.createElement('b');output.textContent=pose[n]+(n==='rail'?'%':'°');input.oninput=()=>{output.textContent=input.value+(n==='rail'?'%':'°')};row.append(label,input,output);target.append(row)}}
 $('#savegrid').onclick=()=>{let g={};for(const field of document.querySelectorAll('[data-key]'))g[field.dataset.key]=Number(field.value);g.columns=Math.trunc(g.columns);g.rows=Math.trunc(g.rows);call('/config',{grid:g})};$('#applyrot').onclick=()=>{try{let i=Number($('#rstep').value);if(!Number.isInteger(i))throw Error('Індекс має бути цілим');const v=model.grid.base_zero_deg+i*model.grid.rotation_step_deg;if(v<0||v>180)throw Error('Кут поза діапазоном');$('#axis-base').value=v;$('#axis-base').dispatchEvent(new Event('input'));message(`R${i} → BASE ${v}°`)}catch(e){message(e.message)}};
 $('#savepose').onclick=()=>call('/teach',{cell:selected,pose:readPose()});$('#loadpose').onclick=async()=>{let p=model?.cells[selected];if(!p){message('Комірку не навчено');return}for(const n of names){$('#axis-'+n).value=p[n];$('#axis-'+n).dispatchEvent(new Event('input'))}$('#grip').value=String(p.grip_closed);await call('/goto',{cell:selected})};$('#start').onclick=()=>call('/cycle/start',{from:$('#from').value,to:$('#to').value});$('#next').onclick=()=>call('/cycle/next',{});$('#reset').onclick=()=>call('/cycle/reset',{});$('#stop').onclick=()=>call('/stop',{});$('#unlock').onclick=()=>call('/unlock',{});paintSliders();call('',undefined);
-</script>
-
-<script>
-(function(){
-  let currentStep={x_step:0,rotation_step:6,rotation_deg:90,grip_closed:false};
-  let busy=false;
-  const el=id=>document.getElementById(id);
-  function renderStep(){
-    el('x-value').textContent='X'+currentStep.x_step;
-    el('rotation-value').textContent=currentStep.rotation_deg+'°';
-    el('r-index').textContent='R'+currentStep.rotation_step;
-    el('rotation-step').value=currentStep.rotation_step;
-    el('grip-value').textContent=currentStep.grip_closed?'CLOSED':'OPEN';
-    el('grip-boolean').textContent=currentStep.grip_closed?'TRUE / 1':'FALSE / 0';
-    el('step-summary').textContent=`X${currentStep.x_step} · R${currentStep.rotation_step} · GRIP ${Number(currentStep.grip_closed)}`;
-    const track=el('rail-map');track.replaceChildren();
-    for(let i=0;i<=5;i++){
-      const node=document.createElement('span');node.className='rail-node'+(i===currentStep.x_step?' on':'');
-      node.textContent='X'+i;track.append(node);
-    }
-    el('step-minus').disabled=busy||currentStep.x_step<=0;
-    el('step-plus').disabled=busy||currentStep.x_step>=5;
-    el('rot-minus').disabled=busy||currentStep.rotation_step<=0;
-    el('rot-plus').disabled=busy||currentStep.rotation_step>=12;
-    el('rotation-step').disabled=busy;
-    el('grip-open').disabled=busy||!currentStep.grip_closed;
-    el('grip-close').disabled=busy||currentStep.grip_closed;
-  }
-  async function requestStep(path,payload){
-    const res=await fetch(path,{method:payload===undefined?'GET':'POST',
-      headers:{'Content-Type':'application/json'},
-      body:payload===undefined?undefined:JSON.stringify(payload)});
-    const data=await res.json();
-    if(!res.ok)throw Error(data.error||('HTTP '+res.status));
-    return data;
-  }
-  async function loadStep(){
-    try{currentStep=await requestStep('/api/step');el('step-status').textContent='MOCK API / ONLINE';renderStep();}
-    catch(e){el('step-status').textContent='STEP API OFFLINE: '+e.message;renderStep();}
-  }
-  async function sendStep(path,payload){
-    if(busy)return;busy=true;renderStep();
-    try{currentStep=await requestStep(path,payload);el('step-status').textContent='SIMULATION UPDATED';}
-    catch(e){el('step-status').textContent='ERROR: '+e.message;try{currentStep=await requestStep('/api/step')}catch(_){}}
-    finally{busy=false;renderStep();}
-  }
-  el('step-minus').onclick=()=>sendStep('/api/step/x',{step:currentStep.x_step-1});
-  el('step-plus').onclick=()=>sendStep('/api/step/x',{step:currentStep.x_step+1});
-  el('rotation-step').onchange=e=>sendStep('/api/step/rotation',{step:Number(e.target.value)});
-  el('rot-minus').onclick=()=>sendStep('/api/step/rotation',{step:currentStep.rotation_step-1});
-  el('rot-plus').onclick=()=>sendStep('/api/step/rotation',{step:currentStep.rotation_step+1});
-  el('grip-open').onclick=()=>sendStep('/api/step/grip',{closed:false});
-  el('grip-close').onclick=()=>sendStep('/api/step/grip',{closed:true});
-  loadStep();
-})();
-</script>
-
-</body></html>
+</script></body></html>
