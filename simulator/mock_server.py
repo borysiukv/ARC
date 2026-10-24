@@ -1,4 +1,4 @@
-"""ARC'26 local ESP32 API simulator. Python 3.9+, stdlib only; no physical motor control."""
+"""ARC'26 mock ESP32 API: manual + grid + logical step control. No real motors."""
 import argparse
 import json
 import math
@@ -99,6 +99,56 @@ def grid_act(method,path,data):
         else:raise LookupError('Unknown grid endpoint')
         state['commands']+=1
         return grid_snapshot()
+
+# Logical step control: no motors are commanded. X steps are NOT millimeters.
+STEP_X_MIN, STEP_X_MAX = 0, 5
+STEP_R_MIN, STEP_R_MAX = 0, 12
+STEP_R_DEG = 15
+STEP = {'x_step': 0, 'rotation_step': 6, 'grip_closed': False}
+
+
+def step_snapshot():
+    return {
+        **STEP,
+        'rotation_deg': STEP['rotation_step'] * STEP_R_DEG,
+        'simulation_only': True,
+        'locked': state['locked'],
+    }
+
+
+def integer_step(value, low, high):
+    # bool is an int subclass: reject it and fractional/invalid input.
+    if type(value) is not int or not low <= value <= high:
+        raise ValueError(f'Step must be an integer from {low} to {high}')
+    return value
+
+
+def step_act(method, path, data):
+    with lock:
+        if method == 'GET' and path == '/api/step':
+            return step_snapshot()
+        if method != 'POST':
+            raise LookupError('Unknown step endpoint')
+        if state['locked'] or GRID_CYCLE is not None or state['cycle'] is not None:
+            raise PermissionError('Robot locked or automatic cycle active')
+        if path == '/api/step/x':
+            STEP['x_step'] = integer_step(data.get('step'), STEP_X_MIN, STEP_X_MAX)
+            # NOTE: rail in /api/state remains a legacy percent, not step position.
+        elif path == '/api/step/rotation':
+            STEP['rotation_step'] = integer_step(data.get('step'), STEP_R_MIN, STEP_R_MAX)
+            state['axes']['base'] = STEP['rotation_step'] * STEP_R_DEG
+        elif path == '/api/step/grip':
+            closed = data.get('closed')
+            if type(closed) is not bool:
+                raise ValueError('closed must be true or false')
+            STEP['grip_closed'] = closed
+            # Simulation-only servo angle, not calibrated for actual grip hardware.
+            state['axes']['gripper'] = 115 if closed else 35
+        else:
+            raise LookupError('Unknown step endpoint')
+        state['commands'] += 1
+        return step_snapshot()
+
 
 lock = threading.RLock()
 state = {'axes': DEFAULTS['HOME'].copy(), 'locked': False, 'cycle': None, 'commands': 0, 'mode': 'MOCK', 'hardware': False}
@@ -207,11 +257,21 @@ class Handler(BaseHTTPRequestHandler):
             self.send(200, grid_html.read_bytes(), 'text/html; charset=utf-8')
             return
         if path == '/api/health':
-            self.send(200, {'app': 'ARC26 Mock ESP32', 'version': '0.5', 'grid_enabled': True, 'simulation_only': True})
+            self.send(200, {'app': 'ARC26 Mock ESP32', 'version': '0.7', 'grid_enabled': True, 'step_enabled': True, 'simulation_only': True})
             return
         if path == '/favicon.ico': self.send(204,b''); return
-        try: self.send(200, grid_act('GET',path,{}) if path.startswith('/api/grid') else act('GET',path,{}))
-        except LookupError as ex: self.send(404,{'error':str(ex)})
+        try:
+            if path.startswith('/api/step'):
+                result = step_act('GET', path, {})
+            elif path.startswith('/api/grid'):
+                result = grid_act('GET', path, {})
+            else:
+                result = act('GET', path, {})
+            self.send(200, result)
+        except LookupError as ex:
+            self.send(404, {'error': str(ex)})
+        except (ValueError, TypeError, KeyError) as ex:
+            self.send(400, {'error': str(ex)})
 
     def do_POST(self):
         path = urlparse(self.path).path
@@ -220,7 +280,13 @@ class Handler(BaseHTTPRequestHandler):
             if length > 16384: raise ValueError('Payload too large')
             data = json.loads(self.rfile.read(length)) if length else {}
             if not isinstance(data,dict): raise ValueError('JSON object required')
-            self.send(200, grid_act('POST',path,data) if path.startswith('/api/grid') else act('POST',path,data))
+            if path.startswith('/api/step'):
+                result = step_act('POST', path, data)
+            elif path.startswith('/api/grid'):
+                result = grid_act('POST', path, data)
+            else:
+                result = act('POST', path, data)
+            self.send(200, result)
         except PermissionError as ex: self.send(409,{'error':str(ex)})
         except (ValueError,TypeError,KeyError,json.JSONDecodeError) as ex: self.send(400,{'error':str(ex)})
         except LookupError as ex: self.send(404,{'error':str(ex)})
@@ -241,6 +307,7 @@ def main():
     print('SIMULATION ONLY. No motors are connected.', flush=True)
     print(f'GRID UI: http://{args.host}:{args.port}/grid', flush=True)
     print(f'GRID API: http://{args.host}:{args.port}/api/grid', flush=True)
+    print(f'STEP API: http://{args.host}:{args.port}/api/step', flush=True)
     try: server.serve_forever()
     except KeyboardInterrupt: pass
     finally: server.server_close()
