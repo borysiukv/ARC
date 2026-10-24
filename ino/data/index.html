@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3efe5"><title>ARC / 26 · ROBOT CONTROL</title>
+<style>
+:root{--paper:#f3efe5;--ink:#17211f;--blue:#2645eb;--orange:#f45a38;--yellow:#f8dc59;--mint:#a3d9c2;--line:#17211f;--off:#e7e0d2}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,'Segoe UI',Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:2px solid var(--ink);font-weight:750}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--orange);outline-offset:2px}h1,h2,h3{font-family:Impact,'Arial Narrow',sans-serif;font-weight:900;line-height:1.03;letter-spacing:-.014em;margin:0}h1{font-size:clamp(56px,8vw,118px);max-width:1000px;margin:10px 0}h2{font-size:clamp(25px,3vw,36px)}h3{font-size:21px}.mono,.kicker,label,.badge,.note,.small,nav,a,.btn,output,footer{font-family:Consolas,'Courier New',monospace}a{color:inherit}#app{width:min(1460px,100%);margin:auto;padding:20px 26px 30px}header{display:flex;align-items:center;gap:16px;justify-content:space-between;border-bottom:3px solid var(--ink);padding:8px 0 18px}.brand{font-family:Impact,'Arial Narrow',sans-serif;font-size:28px;white-space:nowrap}.brand b{color:var(--blue)}nav{display:flex;gap:8px;flex-wrap:wrap}nav a{text-decoration:none;border:1px solid var(--ink);padding:8px 12px;font-size:12px;font-weight:700}nav a:hover{background:var(--yellow)}.badge{font-size:11px;background:var(--yellow);border:1px solid var(--ink);padding:7px 10px;font-weight:bold}.badge.good{background:var(--mint)}.badge.bad{background:#ffc5b5}.kicker{font-size:12px;font-weight:bold;color:var(--blue);text-transform:uppercase;margin-top:28px}.intro{border-left:5px solid var(--orange);padding:3px 0 3px 13px;margin:0 0 23px;max-width:840px}.title-blue{color:var(--blue)}.notice{background:#ffe7db;border-left:4px solid var(--orange);padding:12px;font-size:13px}.dashboard{display:grid;grid-template-columns:1.06fr .94fr;gap:16px;align-items:start}.panel{border:2px solid var(--line);padding:18px;background:#f9f6ef;min-width:0;margin-bottom:16px}.panelhead{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:13px;margin-bottom:15px}.tag{font:700 11px Consolas,monospace;color:var(--blue);text-align:right}.fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.fieldgrid.three{grid-template-columns:repeat(3,minmax(0,1fr))}label{font-size:11px;font-weight:700;display:flex;flex-direction:column;gap:5px;min-width:0}input[type=number],input[type=text],select{background:white;border:1px solid var(--line);border-radius:0;padding:10px;min-width:0;width:100%;font:15px Consolas,monospace;color:var(--ink)}input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.btn{padding:11px 13px;min-height:43px;background:var(--yellow);font-size:12px}.btn.blue{background:var(--blue);color:white}.btn.orange{background:var(--orange);color:#151515}.btn.black{background:var(--ink);color:white}.btn.paper{background:var(--paper)}.btn:hover:not(:disabled){filter:brightness(.94)}.actions .btn{flex:1}.rail-preview{border:2px solid var(--ink);background:#e7e1d4;padding:10px}.preview-label{display:flex;justify-content:space-between;font:11px Consolas,monospace;margin-bottom:4px}.rail-preview svg{width:100%;height:auto;display:block}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}.stat{padding:10px;border:1px solid var(--ink);background:var(--mint);min-width:0}.stat:nth-child(2){background:var(--yellow)}.stat:nth-child(3){background:#dfdfff}.stat span{display:block;font:10px Consolas,monospace}.stat strong{display:block;font:25px Impact,Arial,sans-serif;margin-top:3px}.axis{display:grid;grid-template-columns:94px minmax(0,1fr) 50px;gap:9px;align-items:center;border-bottom:1px solid #c6c3ba;padding:9px 0}.axis label{font-size:11px}.axis output{text-align:right;font-size:13px;font-weight:bold}.gridbox{display:grid;gap:7px;margin-bottom:13px}.cell{min-height:66px;padding:9px 3px;background:var(--yellow);border:2px solid var(--ink);font:23px Impact,Arial,sans-serif}.cell.taught{box-shadow:inset 0 -8px var(--mint)}.cell.active{background:var(--blue);color:#fff}.cell small{display:block;font:9px Consolas,monospace}.selected{padding:12px;margin:0 0 15px;background:var(--mint);font:12px Consolas,monospace}.stepcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stepcard{padding:13px;border:2px solid var(--ink);background:var(--yellow);min-width:0}.stepcard:nth-child(2){background:#e2e7ff}.stepcard:nth-child(3){background:var(--mint)}.stepcard .eyebrow{font:11px Consolas,monospace;margin-bottom:12px}.stepval{font:clamp(31px,4vw,52px) Impact,Arial,sans-serif}.stepcard .actions{gap:5px}.stepcard .btn{font-size:12px;padding:8px;min-height:37px}.stepcard input[type=range]{margin:8px 0 15px}.stepmeta{font:11px Consolas,monospace;margin-top:6px}.cyclebar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:14px 0}.phase{border:1px solid #9c9b92;font:11px Consolas,monospace;padding:8px;min-height:43px;background:white}.phase.current{background:var(--blue);color:white;border-color:var(--blue)}.phase.done{background:var(--mint)}.log{min-height:85px;background:var(--ink);color:#e5f4e9;padding:13px;font:12px/1.55 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:250px;overflow:auto;margin-top:12px}.notice.small{font:12px/1.5 Consolas,monospace;margin-top:12px}footer{border-top:2px solid var(--ink);margin-top:22px;padding-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px}.stack{display:grid;grid-template-columns:1fr;gap:0}.full{grid-column:1 / -1}#toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;font:12px Consolas;padding:11px 15px;max-width:min(450px,calc(100vw - 32px));border-left:5px solid var(--orange);display:none;z-index:9}@media(max-width:960px){.dashboard{grid-template-columns:1fr}.stepcards{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:640px){#app{padding:13px}header{flex-wrap:wrap}.brand{font-size:24px}h1{font-size:clamp(48px,13vw,75px)}.fieldgrid.three{grid-template-columns:repeat(2,minmax(0,1fr))}.stepcards{grid-template-columns:1fr}.stepcard .actions{max-width:340px}.cyclebar{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:13px}.cell{min-height:55px;font-size:19px}}@media(max-width:380px){.fieldgrid,.fieldgrid.three{grid-template-columns:1fr}.axis{grid-template-columns:79px minmax(0,1fr) 43px}nav a{padding:6px 9px;font-size:11px}}
+
+/* Full 4DOF side-view kinematic preview, responsive */
+.kinematics-preview{border:2px solid var(--ink);background:#eeece4;margin:0 0 14px;overflow:hidden}
+.kin-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding:10px 14px;font:700 12px Consolas,monospace;letter-spacing:.015em}
+.kin-head span:last-child{color:var(--blue);text-align:right}
+.kin-stage{position:relative;background:#f5f1e8}
+.kin-stage svg{width:100%;display:block;height:auto;max-height:480px}
+.kin-note{position:absolute;top:15px;left:15px;color:#817f76;font:700 11px Consolas,monospace;pointer-events:none}
+.kin-chip{position:absolute;right:14px;top:13px;background:var(--yellow);border:2px solid var(--ink);padding:7px 11px;font:700 11px Consolas,monospace;pointer-events:none}
+.kin-footer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink)}
+.kin-footer>div{padding:11px 14px;border-right:2px solid var(--ink);min-width:0}.kin-footer>div:last-child{border:0}
+.kin-footer span{display:block;color:#77776f;font:700 10px Consolas,monospace}.kin-footer strong{display:block;font:26px Impact,'Arial Narrow',sans-serif;line-height:1.15;margin-top:3px}
+@media(max-width:460px){.kin-head{font-size:10px}.kin-note{font-size:9px;top:11px;left:8px}.kin-chip{top:8px;right:7px;font-size:9px;padding:4px 6px}.kin-footer>div{padding:9px 7px}.kin-footer span{font-size:8px}.kin-footer strong{font-size:20px}}
+</style></head><body><div id="app">
+<header><div class="brand">ARC <b>//</b> 26</div><nav><a href="#manual">01 / MANUAL</a><a href="#grid-panel">02 / GRID</a><a href="#step-panel">03 / STEP</a><a href="#cycle-panel">04 / AUTO</a></nav><span class="badge" id="connection">CONNECTING</span></header>
+<div class="kicker">ARC’26 / ROBOTICS SYSTEMS / COMPACT CONTROLLER 0.8</div><h1>РУХ МОЖНА<br><span class="title-blue">ЗАПРОГРАМУВАТИ.</span></h1>
+<p class="intro">Одна панель для 4DOF, X-рейки, сітки комірок і Pick & Place. <strong>SIMULATION ONLY</strong>: команди зараз змінюють віртуальний стан ESP32, а не фізичні двигуни.</p>
+<div class="dashboard"><div class="stack">
+<section class="panel" id="grid-panel"><div class="panelhead"><h2>01 / СІТКА СТОЛУ</h2><span class="tag">X × Y / ММ</span></div><div class="gridbox" id="gridCells"></div><div class="selected" id="selectedInfo">SELECT CELL</div>
+<div class="fieldgrid" id="configFields">
+<label>КОЛОНКИ<input type="number" data-grid="columns" min="1" max="8" step="1"></label><label>РЯДИ<input type="number" data-grid="rows" min="1" max="8" step="1"></label>
+<label>КРОК X, ММ<input type="number" data-grid="pitch_x_mm" min="1" step="1"></label><label>КРОК Y, ММ<input type="number" data-grid="pitch_y_mm" min="1" step="1"></label>
+<label>ПОЧАТОК X, ММ<input type="number" data-grid="origin_x_mm" step="1"></label><label>ПОЧАТОК Y, ММ<input type="number" data-grid="origin_y_mm" step="1"></label>
+<label>ХІД РЕЙКИ, ММ<input type="number" data-grid="rail_travel_mm" min="1" step="1"></label><label>КРОК ПОВОРОТУ, °<input type="number" data-grid="rotation_step_deg" min="1" max="90" step="1"></label>
+<label>НУЛЬ ОСНОВИ, °<input type="number" data-grid="base_zero_deg" min="0" max="180"></label><label>GRIP OPEN, °<input type="number" data-grid="grip_open_deg" min="0" max="180"></label><label>GRIP CLOSED, °<input type="number" data-grid="grip_closed_deg" min="0" max="180"></label></div>
+<div class="actions"><button class="btn blue" id="saveConfig">SAVE GRID CONFIG</button></div>
+<p class="notice small">X/Y описують центри комірок на столі, а не фактичне положення моторів. Для кожної потрібної комірки слід навчити позу маніпулятора.</p></section>
+<section class="panel" id="step-panel"><div class="panelhead"><h2>02 / STEP CONTROL</h2><span class="tag">X / R / GRIP</span></div>
+<div class="stepcards"><div class="stepcard"><div class="eyebrow">01 / LINEAR X</div><div class="stepval" id="xValue">X0</div><div class="stepmeta">УМОВНІ КРОКИ X0–X5</div><div class="actions"><button class="btn" id="xMinus">−</button><button class="btn" id="xPlus">+</button></div></div>
+<div class="stepcard"><div class="eyebrow">02 / ROTATION R</div><div class="stepval" id="rValue">90°</div><div class="stepmeta" id="rMeta">R6 · 15° / STEP</div><input id="rSlider" type="range" min="0" max="12" value="6"><div class="actions"><button class="btn paper" id="rMinus">− R</button><button class="btn paper" id="rPlus">+ R</button></div></div>
+<div class="stepcard"><div class="eyebrow">03 / GRIPPER</div><div class="stepval" id="gripValue">OPEN</div><div class="stepmeta">FALSE / TRUE</div><div class="actions"><button class="btn paper" id="gripOpen">OPEN</button><button class="btn paper" id="gripClose">CLOSE</button></div></div></div>
+<p class="notice small">На 4 DC-моторах один X-крок означатиме короткий часовий імпульс, а не гарантовану відстань у мм. Наразі X-кроки лише логічні.</p></section>
+</div><div class="stack">
+<section class="panel" id="manual"><div class="panelhead"><h2>03 / MANUAL + TEACH</h2><span class="tag">4DOF / TARGETS</span></div>
+<div class="kinematics-preview" aria-label="Анімована бокова схема маніпулятора на рейці">
+ <div class="kin-head"><span>01 / КІНЕМАТИКА</span><span>LIVE PREVIEW / SIMULATED</span></div>
+ <div class="kin-stage">
+  <div class="kin-note">SIDE VIEW / NOT TO SCALE</div><div class="kin-chip">4DOF + X</div>
+  <svg id="robotViz" viewBox="0 0 900 510" role="img" aria-label="Вигляд збоку на руку, клешню й рухому каретку">
+   <defs><pattern id="kinDots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.15" fill="#c8c3b4"/></pattern></defs>
+   <rect width="900" height="510" fill="url(#kinDots)"/>
+   <g fill="#17211f"><rect x="125" y="390" width="655" height="21"/><rect x="135" y="418" width="635" height="20"/><rect x="147" y="438" width="34" height="21"/><rect x="723" y="438" width="34" height="21"/></g>
+   <g id="kinRailTicks" stroke="#ded9cb" stroke-width="1.5"></g>
+   <text x="136" y="361" font-size="19" font-family="Consolas,monospace" font-weight="bold" fill="#2645eb">X / LINEAR AXIS</text>
+   <path d="M136 369 H265" stroke="#2645eb" stroke-width="3"/><path d="M265 369 l-13 -8 v16 z" fill="#2645eb"/>
+   <g id="kinCarriage"><rect x="-49" y="-18" width="98" height="35" fill="#2645eb" stroke="#17211f" stroke-width="5"/><rect x="-37" y="-38" width="74" height="20" fill="#17211f"/></g>
+   <line id="kinUpper" stroke="#f45a38" stroke-width="19" stroke-linecap="round" stroke="#f45a38"/>
+   <line id="kinForearm" stroke="#f45a38" stroke-width="16" stroke-linecap="round"/>
+   <line id="kinWrist" stroke="#f45a38" stroke-width="13" stroke-linecap="round"/>
+   <circle id="kinBaseJoint" r="23" fill="#f8dc59" stroke="#17211f" stroke-width="7"/>
+   <circle id="kinElbowJoint" r="20" fill="#f8dc59" stroke="#17211f" stroke-width="7"/>
+   <circle id="kinWristJoint" r="17" fill="#f45a38" stroke="#17211f" stroke-width="6"/>
+   <line id="kinGripLeft" stroke="#17211f" stroke-width="8" stroke-linecap="round"/>
+   <line id="kinGripRight" stroke="#17211f" stroke-width="8" stroke-linecap="round"/>
+   <text x="130" y="487" font-size="15" font-family="Consolas,monospace" fill="#17211f">HOME / X0</text>
+   <text x="770" y="487" font-size="15" font-family="Consolas,monospace" text-anchor="end" fill="#17211f">X5 / END</text>
+  </svg>
+ </div>
+ <div class="kin-footer"><div><span>ARM STATUS</span><strong id="kinStatus">READY</strong></div><div><span>RAIL POSITION</span><strong id="kinRail">0%</strong></div><div><span>COMMAND MODE</span><strong id="kinMode">DEMO</strong></div></div>
+</div>
+<div class="stats"><div class="stat"><span>RAIL</span><strong id="statX">X0</strong></div><div class="stat"><span>ROTATION</span><strong id="statR">90°</strong></div><div class="stat"><span>GRIPPER</span><strong id="statG">0</strong></div></div>
+<div id="axes"></div><div class="actions"><button class="btn blue" id="applyAxes">APPLY VIRTUAL POSE</button><button class="btn" id="loadHome">HOME</button><button class="btn" id="loadSafe">SAFE</button></div><hr style="border:1px solid var(--ink);margin:20px 0">
+<h3>TEACH SELECTED CELL</h3><div class="fieldgrid"><label>КОМІРКА<input type="text" id="teachCell" value="A1" readonly></label><label>X STEP<input type="number" id="teachX" min="0" max="5" value="0"></label><label>R STEP<input type="number" id="teachR" min="0" max="12" value="6"></label><label>GRIP CLOSED<select id="teachGrip"><option value="false">FALSE / OPEN</option><option value="true">TRUE / CLOSED</option></select></label></div>
+<div class="actions"><button class="btn blue" id="teachSave">TEACH POSITION</button><button class="btn" id="teachLoad">LOAD POSITION</button></div>
+<p class="notice small">Для навчання комірки клешня має бути відкрита. Плече й лікоть задаються повзунками вище; X/R зберігаються дискретно. Значення зберігаються в LittleFS ESP32.</p></section>
+<section class="panel" id="cycle-panel"><div class="panelhead"><h2>04 / PICK & PLACE</h2><span class="tag">SEMI-AUTO / 8 STEPS</span></div><div class="fieldgrid"><label>FROM<select id="fromCell"></select></label><label>TO<select id="toCell"></select></label></div><div class="actions"><button class="btn orange" id="cycleStart">START / SIM</button><button class="btn blue" id="cycleNext">NEXT STEP →</button><button class="btn" id="cycleReset">RESET</button></div><div class="cyclebar" id="phases"></div><div class="actions"><button class="btn orange" id="lock">LOCK / STOP</button><button class="btn black" id="unlock">UNLOCK</button></div><p class="notice small"><b>STOP у цій версії програмний:</b> він блокує тільки команди API. Для реального робота потрібні фізичне аварійне вимкнення, кінцевики й перевірені межі руху.</p><div class="log" id="log">CONNECTING…</div></section>
+</div></div>
+<footer><span>ARC / 26 · FIELD NOTES 001–008 · COMPACT CONTROLLER v0.8</span><span>NO GPIO MOTOR OUTPUTS · HTTP OVER LOCAL WI-FI</span></footer></div><div id="toast" role="status"></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const AXES=['base','shoulder','elbow','gripper','rail'];
+const PHASES=['APPROACH','CLOSE','SAFE','TRAVEL','LOWER','OPEN','RAISE','HOME'];
+let gridState=null, stepState=null, state=null, selected='A1', lastCycle=null, inRequest=false;
+const initialGrid={columns:3,rows:3,pitch_x_mm:50,pitch_y_mm:50,origin_x_mm:0,origin_y_mm:0,rail_travel_mm:300,rotation_step_deg:15,base_zero_deg:0,grip_open_deg:35,grip_closed_deg:90};
+let demo=location.protocol==='file:' || new URLSearchParams(location.search).has('demo');
+let local={grid:{...initialGrid},cells:{},axes:{base:90,shoulder:90,elbow:90,gripper:35,rail:0},x_step:0,rotation_step:6,grip_closed:false,locked:false,cycle:null};
+function log(x){$('log').textContent=(typeof x==='string'?x:JSON.stringify(x,null,2));}
+function notify(s){const el=$('toast');el.textContent=s;el.style.display='block';clearTimeout(notify.id);notify.id=setTimeout(()=>el.style.display='none',3500)}
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+function localGrid(){const cells={};for(let row=0;row<local.grid.rows;row++)for(let col=0;col<local.grid.columns;col++){const name=String.fromCharCode(65+col)+(row+1);cells[name]={x_mm:local.grid.origin_x_mm+col*local.grid.pitch_x_mm,y_mm:local.grid.origin_y_mm+row*local.grid.pitch_y_mm}}return{grid:local.grid,cells:local.cells,logical_cells:cells,axes:local.axes,locked:local.locked,cycle:local.cycle,simulation_only:true}}
+function localStep(){return{x_step:local.x_step,rotation_step:local.rotation_step,rotation_deg:local.grid.base_zero_deg+local.rotation_step*local.grid.rotation_step_deg,grip_closed:local.grip_closed,locked:local.locked,simulation_only:true}}
+function mockApi(path,body){
+  if(path==='/api/grid')return localGrid();if(path==='/api/step')return localStep();if(path==='/api/state')return{axes:local.axes,locked:local.locked,cycle:local.cycle,hardware:false};
+  if(path==='/api/stop'||path==='/api/grid/stop'){local.locked=true;local.cycle=null;return{locked:true}}
+  if(path==='/api/unlock'||path==='/api/grid/unlock'){local.locked=false;return{locked:false}}
+  if(local.locked)throw Error('CONTROL LOCKED');
+  if(local.cycle && !['/api/grid/cycle/next','/api/grid/cycle/reset'].includes(path))throw Error('CYCLE ACTIVE');
+  if(path==='/api/step/x'){const v=Number(body.step);if(!Number.isInteger(v)||v<0||v>5)throw Error('X0…X5');local.x_step=v;local.axes.rail=v*20;return localStep()}
+  if(path==='/api/step/rotation'){const v=Number(body.step),angle=local.grid.base_zero_deg+v*local.grid.rotation_step_deg;if(!Number.isInteger(v)||v<0||v>12||angle>180)throw Error('INVALID ROTATION');local.rotation_step=v;local.axes.base=angle;return localStep()}
+  if(path==='/api/step/grip'){local.grip_closed=Boolean(body.closed);local.axes.gripper=local.grip_closed?local.grid.grip_closed_deg:local.grid.grip_open_deg;return localStep()}
+  if(path==='/api/axes'){local.axes={...body.axes};return{axes:local.axes}}
+  if(path==='/api/position/load'){if(body.name==='HOME'){local.axes={base:90,shoulder:90,elbow:90,gripper:35,rail:0};local.x_step=0;local.rotation_step=6}else if(body.name==='SAFE'){local.axes={base:90,shoulder:125,elbow:55,gripper:35,rail:0}}return{axes:local.axes}}
+  if(path==='/api/grid/config'){local.grid={...body.grid};local.cells={};return localGrid()}
+  if(path==='/api/grid/teach'){if(!body.cell||body.pose.grip_closed)throw Error('TEACH WITH GRIP OPEN');local.cells[body.cell]={...body.pose};return localGrid()}
+  if(path==='/api/grid/goto'){if(!local.cells[body.cell])throw Error('CELL NOT TAUGHT');const p=local.cells[body.cell];local.axes=Object.fromEntries(AXES.map(k=>[k,p[k]]));local.x_step=p.x_step;local.rotation_step=p.rotation_step;local.grip_closed=p.grip_closed;return localGrid()}
+  if(path==='/api/grid/cycle/start'){if(body.from===body.to||!local.cells[body.from]||!local.cells[body.to])throw Error('TEACH TWO CELLS FIRST');local.cycle={from:body.from,to:body.to,step:0,total:8,last_step:''};return localGrid()}
+  if(path==='/api/grid/cycle/reset'){local.cycle=null;return localGrid()}
+  if(path==='/api/grid/cycle/next'){if(!local.cycle)throw Error('NO ACTIVE CYCLE');let c=local.cycle;c.last_step=PHASES[c.step];c.step++;if(c.step>=8)local.cycle=null;return localGrid()}
+  throw Error('UNKNOWN MOCK ENDPOINT: '+path)
+}
+async function api(path,body){
+  if(demo)return mockApi(path,body);
+  const resp=await fetch(path,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
+  let data;try{data=await resp.json()}catch{throw Error('INVALID SERVER RESPONSE')}
+  if(!resp.ok)throw Error(data.error||`HTTP ${resp.status}`);return data;
+}
+async function reload({inputs=false}={}){
+  try{const [g,s,a]=await Promise.all([api('/api/grid'),api('/api/step'),api('/api/state')]);
+    gridState=g;stepState=s;state=a;lastCycle=g.cycle;renderGrid();renderStep();renderState();if(inputs)fillInputs();
+    $('connection').textContent=demo?'LOCAL DEMO':g.locked?'LOCKED':'ESP32 / ONLINE';
+    $('connection').className='badge '+(g.locked?'bad':'good');
+  }catch(e){$('connection').textContent='OFFLINE';$('connection').className='badge bad';log('ERROR / '+e.message)}
+}
+async function send(path,body){if(inRequest)return;inRequest=true;try{let v=await api(path,body);log({action:path,result:v.cycle||v});await reload();return v}catch(e){notify(e.message);log('ERROR / '+e.message);await reload()}finally{inRequest=false}}
+function fillInputs(){for(const input of document.querySelectorAll('[data-grid]'))input.value=gridState.grid[input.dataset.grid];renderAxes(true)}
+function renderGrid(){const g=gridState.grid, area=$('gridCells');area.style.gridTemplateColumns=`repeat(${g.columns},minmax(0,1fr))`;area.replaceChildren();let ids=[];for(let row=1;row<=g.rows;row++)for(let col=0;col<g.columns;col++){let id=String.fromCharCode(65+col)+row;ids.push(id);let b=document.createElement('button');b.className='cell'+(id===selected?' active':'')+(gridState.cells[id]?' taught':'');b.textContent=id;let sm=document.createElement('small');sm.textContent=gridState.cells[id]?'● TAUGHT':'○ EMPTY';b.append(sm);b.onclick=()=>{selected=id;renderGrid()};area.append(b)}
+  if(!ids.includes(selected))selected=ids[0];$('teachCell').value=selected;let p=gridState.logical_cells[selected];$('selectedInfo').textContent=`${selected} / X ${p.x_mm} мм · Y ${p.y_mm} мм · ${gridState.cells[selected]?'TAUGHT':'NOT TAUGHT'}`;
+  for(const name of ['fromCell','toCell']){const el=$(name),old=el.value;el.replaceChildren();for(const id of ids){const op=document.createElement('option');op.value=id;op.textContent=id+(gridState.cells[id]?' ✓':'');el.append(op)}el.value=ids.includes(old)?old:(name==='fromCell'?ids[0]:ids[ids.length-1])}
+  $('phases').replaceChildren();PHASES.forEach((name,i)=>{const div=document.createElement('div');div.className='phase'+(lastCycle&&i===lastCycle.step?' current':'')+(lastCycle&&i<lastCycle.step?' done':'');div.textContent=`${i+1} / ${name}`;$('phases').append(div)});
+}
+
+function renderKinematics(axes,previewOnly=false){
+  if(!axes)return;
+  const set=(id,attrs)=>{const el=$(id);if(el)for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(Number(v.toFixed?.(2)??v)))};
+  const clampValue=(x,a,b)=>Math.max(a,Math.min(b,Number(x)||0));
+  const rail=clampValue(axes.rail,0,100);
+  const shoulder=clampValue(axes.shoulder,0,180);
+  const elbow=clampValue(axes.elbow,0,180);
+  const grip=clampValue(axes.gripper,0,180);
+  const rad=Math.PI/180;
+  // Side elevation: shoulder and elbow drive two visible links.
+  // BASE is a yaw rotation around the vertical axis, so it is not projected as a side-view angle.
+  const bx=190+(rail/100)*510, by=355;
+  const a1=(-145+(shoulder-90)*0.74)*rad;
+  const a2=a1+((elbow-90)*0.92+55)*rad;
+  const x1=bx+Math.cos(a1)*145,y1=by+Math.sin(a1)*145;
+  const x2=x1+Math.cos(a2)*140,y2=y1+Math.sin(a2)*140;
+  const a3=a2-22*rad,x3=x2+Math.cos(a3)*47,y3=y2+Math.sin(a3)*47;
+  const carrier=$('kinCarriage');if(carrier)carrier.setAttribute('transform',`translate(${bx} 375)`);
+  set('kinBaseJoint',{cx:bx,cy:by});
+  set('kinUpper',{x1:bx,y1:by,x2:x1,y2:y1});
+  set('kinForearm',{x1:x1,y1:y1,x2:x2,y2:y2});
+  set('kinWrist',{x1:x2,y1:y2,x2:x3,y2:y3});
+  set('kinElbowJoint',{cx:x1,cy:y1});set('kinWristJoint',{cx:x2,cy:y2});
+  const aperture=(7+Math.abs(grip-90)/90*21)*rad;
+  set('kinGripLeft',{x1:x3,y1:y3,x2:x3+30*Math.cos(a3-aperture),y2:y3+30*Math.sin(a3-aperture)});
+  set('kinGripRight',{x1:x3,y1:y3,x2:x3+30*Math.cos(a3+aperture),y2:y3+30*Math.sin(a3+aperture)});
+  const ticks=$('kinRailTicks');if(ticks&&!ticks.dataset.ready){for(let i=0;i<=28;i++){let t=document.createElementNS('http://www.w3.org/2000/svg','line'),x=131+i*23;t.setAttribute('x1',x);t.setAttribute('x2',x);t.setAttribute('y1',391);t.setAttribute('y2',i%5===0?373:382);ticks.append(t)}ticks.dataset.ready='1'}
+  $('kinRail').textContent=`${Math.round(rail)}%`;
+  $('kinStatus').textContent=previewOnly?'PREVIEW':(state?.locked?'LOCKED':'READY');
+  $('kinMode').textContent=demo?'DEMO':'ESP32';
+}
+function renderStep(){const s=stepState,g=gridState.grid;$('xValue').textContent='X'+s.x_step;$('rValue').textContent=Number(s.rotation_deg).toFixed(0)+'°';$('rMeta').textContent=`R${s.rotation_step} · ${g.rotation_step_deg}° / STEP`;$('rSlider').value=s.rotation_step;$('gripValue').textContent=s.grip_closed?'CLOSED':'OPEN';$('statX').textContent='X'+s.x_step;$('statR').textContent=Number(s.rotation_deg).toFixed(0)+'°';$('statG').textContent=s.grip_closed?'1':'0';renderKinematics(state?.axes || gridState?.axes)}
+function renderAxes(force){const axes=state?.axes;if(!axes)return;if(force||!renderAxes.created){const root=$('axes');root.replaceChildren();for(const n of AXES){const line=document.createElement('div');line.className='axis';const label=document.createElement('label');label.textContent=n.toUpperCase();label.htmlFor='axis-'+n;const input=document.createElement('input');input.type='range';input.id='axis-'+n;input.min='0';input.max=n==='rail'?'100':'180';input.step='1';input.value=axes[n];const output=document.createElement('output');output.id='out-'+n;output.textContent=axes[n]+(n==='rail'?'%':'°');input.oninput=()=>{output.textContent=input.value+(n==='rail'?'%':'°');renderKinematics(readAxes(),true)};line.append(label,input,output);root.append(line)}renderAxes.created=true}}
+function renderState(){renderAxes(true);renderKinematics(state?.axes);$('teachX').value=stepState.x_step;$('teachR').value=stepState.rotation_step;$('teachGrip').value='false';$('cycleNext').disabled=!lastCycle||gridState.locked;$('cycleStart').disabled=!!lastCycle||gridState.locked}
+function readAxes(){const o={};for(const n of AXES)o[n]=Number($('axis-'+n).value);return o}
+async function teach(){const p={...readAxes(),x_step:Number($('teachX').value),rotation_step:Number($('teachR').value),grip_closed:$('teachGrip').value==='true'};p.base=gridState.grid.base_zero_deg+p.rotation_step*gridState.grid.rotation_step_deg;p.rail=p.x_step*20;await send('/api/grid/teach',{cell:selected,pose:p})}
+function wire(){
+  $('saveConfig').onclick=async()=>{const grid={};for(const field of document.querySelectorAll('[data-grid]'))grid[field.dataset.grid]=Number(field.value);grid.columns=Math.trunc(grid.columns);grid.rows=Math.trunc(grid.rows);if(gridState&&(grid.columns!==gridState.grid.columns||grid.rows!==gridState.grid.rows)&&Object.keys(gridState.cells).length&&!confirm('Зміна кількості рядків або колонок очистить збережені позиції. Продовжити?'))return;await send('/api/grid/config',{grid})};
+  $('xMinus').onclick=()=>send('/api/step/x',{step:stepState.x_step-1});$('xPlus').onclick=()=>send('/api/step/x',{step:stepState.x_step+1});
+  $('rMinus').onclick=()=>send('/api/step/rotation',{step:stepState.rotation_step-1});$('rPlus').onclick=()=>send('/api/step/rotation',{step:stepState.rotation_step+1});
+  $('rSlider').onchange=()=>send('/api/step/rotation',{step:Number($('rSlider').value)});
+  $('gripOpen').onclick=()=>send('/api/step/grip',{closed:false});$('gripClose').onclick=()=>send('/api/step/grip',{closed:true});
+  $('applyAxes').onclick=()=>send('/api/axes',{axes:readAxes()});
+  $('loadHome').onclick=()=>send('/api/position/load',{name:'HOME'});$('loadSafe').onclick=()=>send('/api/position/load',{name:'SAFE'});
+  $('teachSave').onclick=teach;$('teachLoad').onclick=async()=>{await send('/api/grid/goto',{cell:selected});const p=gridState.cells[selected];if(p){for(const n of AXES){$('axis-'+n).value=p[n];$('out-'+n).textContent=p[n]+(n==='rail'?'%':'°')}}};
+  $('cycleStart').onclick=()=>send('/api/grid/cycle/start',{from:$('fromCell').value,to:$('toCell').value});
+  $('cycleNext').onclick=()=>send('/api/grid/cycle/next',{});$('cycleReset').onclick=()=>send('/api/grid/cycle/reset',{});
+  $('lock').onclick=()=>send('/api/stop',{});$('unlock').onclick=()=>send('/api/unlock',{});
+}
+wire();reload({inputs:true}).then(()=>log(demo?'LOCAL DEMO / NO ESP32 REQUIRED':'CONNECTED / MOTORS DISABLED'));
+</script></body></html>
